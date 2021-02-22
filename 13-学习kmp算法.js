@@ -29,7 +29,7 @@ function forcePatter (s, p) {
     }
   }
 
-  return i - j
+  return j === pLen ? i - j : -1
 }
 
 // const s = 'BBC ABCDAB ABCDABCDABDE'
