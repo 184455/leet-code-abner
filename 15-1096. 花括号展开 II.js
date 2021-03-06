@@ -50,9 +50,6 @@ var braceExpansionII = function(expression) {
   // 数组去重
   const uniqueArr = arr => Array.from(new Set(arr))
 
-  // 并集运算
-  const union = (arr1, arr2) => uniqueArr([...arr1, ...arr2])
-
   // 乘法运算符
   const multiplyOperator = (arr1, arr2) => {
     const res = []
@@ -64,4 +61,50 @@ var braceExpansionII = function(expression) {
 
     return res
   }
+
+  const openTag = expression => {
+    // {a,b,c}x => {ax,bx,cx}
+    expression = expression.replace(/\{([a-z,]+)\}([a-z]+)/g, function (matchStr, s1, s2) {
+      const arr = s1.split(',').map(s => s + s2).join(',')
+      return '{' + arr + '}'
+    })
+
+    // x{a,b,c} => {xa,xb,xc}
+    expression = expression.replace(/([a-z]+)\{([a-z,]+)\}/g, function (matchStr, s1, s2) {
+      const arr = s2.split(',').map(s => s1 + s).join(',')
+      return '{' + arr + '}'
+    })
+
+    // {a,b}{a,c} => {aa,ac,ba,bc}
+    expression = expression.replace(/\{([a-z,]+)\}\{([a-z,]+)\}/g, function (matchStr, s1, s2) {
+      return '{' + multiplyOperator(s1.split(','), s2.split(',')) + '}'
+    })
+
+    // {a,{b,c},d,{t,h}} => {a,b,c,d,t,h}
+    expression = expression.replace(/\{([a-z,]+|(\{[a-z,]+\}))+\}/g, function (matchStr) {
+      if (/\{([a-z,]+)\}\{([a-z,]+)\}/g.test(matchStr)) { return matchStr }
+      return '{' + matchStr.replace(/[\{\}]/g, '') + '}'
+    })
+
+    if (/^\{[a-z,]+\}$/.test(expression)) {
+      return uniqueArr(expression.slice(1, -1).split(',').sort())
+    } else {
+      return openTag(expression)
+    }
+  }
+
+  // 没有括号的，直接展开
+  if (/^[a-z,]+$/.test(expression)) {
+    return uniqueArr(expression.split(','))
+  }
+
+  return openTag(expression)
 };
+
+// const expression = "{{a,z}{a,z},a{b,c},{{ab,z},{e,f{g,h,{l,m}}}}}"
+// const expression = "{a,b}{c,{d,e}}"
+// const expression = "{a,b}c{d,e}f"
+// const expression = "{p,q,r}{s,t}a{x,z}z"
+// const expression = "{{a,z},a{b,c},{ab,z}}"
+const expression = "{{{c,g},{h,j},l}{a,{x,ia,o},w}{x,ia,o},{x,ia,o},a}"
+console.log(braceExpansionII(expression));
