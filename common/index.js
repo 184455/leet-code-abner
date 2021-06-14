@@ -14,12 +14,12 @@ const buildBinaryTree = (list) => {
     const temp = []
     nodes.forEach((item) => {
       const leftVal = valueArr.shift()
-      if (leftVal !== null) {
+      if (leftVal !== null && leftVal !== undefined) {
         item.left = _createNode(leftVal)
         temp.push(item.left)
       }
       const rightVal = valueArr.shift()
-      if (rightVal !== null) {
+      if (rightVal !== null && rightVal !== undefined) {
         item.right = _createNode(rightVal)
         temp.push(item.right)
       }
